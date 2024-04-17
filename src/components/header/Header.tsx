@@ -7,9 +7,9 @@ import { Button } from "../ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Check, ChevronsUpDown } from "lucide-react";
 
-import React from "react";
+import * as React from "react";
 import Image from "next/image";
-import { Command, CommandItem } from "../ui/command";
+import { Command, CommandGroup, CommandItem, CommandList } from "../ui/command";
 import { cn } from "@/lib/utils";
 
 const networks = [
@@ -71,37 +71,46 @@ const Header = () => {
                 role="combobox"
                 aria-expanded={open}
                 className="
-                            w-[2 200px] justify-between shadow-[0_2px_2px_rgba(0,0,0,0.3)]
+                            w-[200px] 
+                            justify-between 
+                            shadow-[0_2px_2px_rgba(0,0,0,0.3)]
                             "
               >
                 {/* TODO Add function to iterate through networks with the Hooks */}
                 {value
-                  ? networks.find((network) => network.value === value)?.label
-                  : "Select a Network..."}
+                  ? networks.find((network) => network.value === value)
+                      ?.label
+                  : "Select a network"}
                 <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-[150px] p-0">
               <Command>
                 {/* Iterates through networks */}
-                {networks.map((network) => (
-                  <CommandItem
-                    key={network.value}
-                    value={network.value}
-                    onSelect={(currentNetwork: string) => {
-                      setValue(currentNetwork === value ? "" : currentNetwork);
-                      setOpen(false);
-                    }}
-                  >
-                    <Check
-                      className={cn(
-                        "mr-2 h-4 w-4",
-                        value === network.value ? "opacity-100" : "opacity-0"
-                      )}
-                    />
-                    {network.label}
-                  </CommandItem>
-                ))}
+                <CommandGroup>
+                  <CommandList>
+                    {networks.map((network) => (
+                      <CommandItem
+                        key={network.value}
+                        value={network.value}
+                        onSelect={(currentValue: string) => {
+                          setValue(currentValue === value ? "" : currentValue);
+                          setOpen(false);
+                        }}
+                      >
+                        <Check
+                          className={cn(
+                            "mr-2 h-4 w-4",
+                            value === network.value
+                              ? "opacity-100"
+                              : "opacity-0"
+                          )}
+                        />
+                        {network.label}
+                      </CommandItem>
+                    ))}
+                  </CommandList>
+                </CommandGroup>
               </Command>
             </PopoverContent>
           </Popover>
