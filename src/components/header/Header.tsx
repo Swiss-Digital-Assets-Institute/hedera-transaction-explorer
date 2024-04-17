@@ -1,17 +1,21 @@
 "use client";
 
-import Link from "next/link";
 import Container from "../Container";
 
-import { Button } from "../ui/button";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import { Check, ChevronsUpDown } from "lucide-react";
+import useNetworkSelection from "../../../hooks/useNetworkSelection";
 
-import * as React from "react";
-import Image from "next/image";
-import { Command, CommandGroup, CommandItem, CommandList } from "../ui/command";
 import { cn } from "@/lib/utils";
+import { Check, ChevronsUpDown } from "lucide-react";
+import { Button } from "../ui/button";
+import { Command, CommandGroup, CommandItem, CommandList } from "../ui/command";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import * as React from "react";
+
+// Define the values of each network along with labels
 const networks = [
   {
     value: "mainnet",
@@ -28,9 +32,9 @@ const networks = [
 ];
 
 const Header = () => {
+  const router = useRouter();
   const [open, setOpen] = React.useState(false);
-  // TODO change value into change network hook
-  const [value, setValue] = React.useState("");
+  const { selectedNetwork, updateNetworkSelection }= useNetworkSelection();
   return (
     <div
       className="
@@ -76,10 +80,8 @@ const Header = () => {
                             shadow-[0_2px_2px_rgba(0,0,0,0.3)]
                             "
               >
-                {/* TODO Add function to iterate through networks with the Hooks */}
-                {value
-                  ? networks.find((network) => network.value === value)
-                      ?.label
+                {selectedNetwork
+                  ? networks.find((network) => network.value === selectedNetwork)?.label
                   : "Select a network"}
                 <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
               </Button>
@@ -93,15 +95,20 @@ const Header = () => {
                       <CommandItem
                         key={network.value}
                         value={network.value}
-                        onSelect={(currentValue: string) => {
-                          setValue(currentValue === value ? "" : currentValue);
+                        onSelect={(currentNetwork: string) => {
+                          updateNetworkSelection(
+                            currentNetwork === selectedNetwork 
+                            ? "" 
+                            : currentNetwork
+                          );
+                          router.refresh();
                           setOpen(false);
                         }}
                       >
                         <Check
                           className={cn(
                             "mr-2 h-4 w-4",
-                            value === network.value
+                            selectedNetwork === network.value
                               ? "opacity-100"
                               : "opacity-0"
                           )}
