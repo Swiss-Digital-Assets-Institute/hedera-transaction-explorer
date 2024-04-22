@@ -15,6 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
+import SetTransactionsOnSelect from "./SetTransactionOnSelect";
 
 // Interface to read the table data for pagination
 interface DataTablePaginationPrps<TData> {
@@ -31,8 +32,10 @@ interface DataTablePaginationPrps<TData> {
 export function DataTablePagination<TData>({
   table,
 }: DataTablePaginationPrps<TData>) {
-  const selectedRows = table.getFilteredRowModel().rows;
+  const selectedRows = table.getFilteredSelectedRowModel().rows;
   const rowData = selectedRows.map((row) => row.original);
+
+  console.log(rowData)
 
   return (
     <div className="flex items-center justify-between px-2 text-sm">
@@ -41,7 +44,10 @@ export function DataTablePagination<TData>({
         {table.getFilteredSelectedRowModel().rows.length} of{" "}
         {table.getFilteredRowModel().rows.length} row(s) selected.
         <div className="ml-2">
-          {/* TODO add transaction on select script  */}
+          <SetTransactionsOnSelect 
+            rowsSelected={table.getFilteredSelectedRowModel().rows.length}
+            rowTransactions={rowData}
+          />
         </div>
       </div>
       <div className="flex items-center space-x-6 lg:space-x-8">
