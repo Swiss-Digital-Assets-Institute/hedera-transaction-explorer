@@ -1,4 +1,5 @@
 import Container from "@/components/Container";
+import DisplayTransaction from "./DisplayTransactions";
 
 const TransactionsPage = () => {
     return ( 
@@ -17,7 +18,7 @@ const TransactionsPage = () => {
                 ">
                     <p>Selected Transactions on Account ID: </p>
                 </div>
-                Display Transaction Component
+                <DisplayTransaction/>
             </Container>
         </div>
      );
