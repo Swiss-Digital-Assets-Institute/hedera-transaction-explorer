@@ -79,10 +79,12 @@ export const columns: ColumnDef<Transaction>[] = [
     },
   },
   {
+    // Node column
     accessorKey: "node",
     header: "Node",
   },
   {
+    // Transaction Result column
     accessorKey: "result",
     header: ({ column }) => {
       return (
@@ -90,13 +92,14 @@ export const columns: ColumnDef<Transaction>[] = [
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Result
+          Transaction Result
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
     },
   },
   {
+    // Fees column
     accessorKey: "charged_tx_fee",
     header: "Transaction fee in Hbars",
   },
