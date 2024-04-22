@@ -16,6 +16,8 @@ import { Label } from "../ui/label";
 import useNetworkSelection from "../../../hooks/useNetworkSelection";
 import { useEffect, useState } from "react";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
+import { DataTable } from "./DataTable";
+import columns from "./TableColumnDef";
 
 // Interface for a single transfer inside a transaction
 interface Transfer {
@@ -234,7 +236,11 @@ const TransferLookUp = () => {
           </Wrap>
         </CardContent>
         <div>
-          <CardFooter>{/* TODO add the table here */}</CardFooter>
+          <CardFooter>
+            {transactions.length > 0 && (
+              <DataTable columns={columns} data={transactions} />
+            )}
+          </CardFooter>
         </div>
       </Card>
     </>
