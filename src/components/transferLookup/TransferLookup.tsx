@@ -18,6 +18,7 @@ import { useEffect, useState } from "react";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import { DataTable } from "./DataTable";
 import columns from "./TableColumnDef";
+import TransactionsGraph from "../transaction-graph/TransactionsGraph";
 
 // Interface for a single transfer inside a transaction
 interface Transfer {
@@ -243,6 +244,7 @@ const TransferLookUp = () => {
           </CardFooter>
         </div>
       </Card>
+      {transactions.length > 0 && <TransactionsGraph data={transactions}/>}
     </>
   );
 };
