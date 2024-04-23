@@ -21,6 +21,7 @@ import columns from "./TableColumnDef";
 import TransactionsGraph from "../transaction-graph/TransactionsGraph";
 import { tinybarToHbarConvert } from "@/utils/tinybarToHbar";
 import { timestampToDate } from "@/utils/dateStampConvert";
+import useAccountId from "../../../hooks/useAccountId";
 
 // Interface for a single transfer inside a transaction
 interface Transfer {
@@ -46,7 +47,7 @@ const TransferLookUp = () => {
   const [transactions, setTransactions] = useState([]);
   const [links, setLinks] = useState([]);
   const { selectedNetwork } = useNetworkSelection();
-  // TODO add a hook to save the accountId same as network selection
+  const { selectedAccountId, updateAccountIdSelection } = useAccountId();
   const {
     register,
     handleSubmit,
@@ -54,7 +55,7 @@ const TransferLookUp = () => {
     setValue,
   } = useForm<FieldValues>({
     defaultValues: {
-      accountId: "",
+      accountId: selectedAccountId,
     },
   });
 
@@ -107,8 +108,7 @@ const TransferLookUp = () => {
     setIsLoading(true);
 
     try {
-      // TODO use a Hook to update existing sessionStorage accountId
-      const newAccountId = accountId;
+      const newAccountId = updateAccountIdSelection(accountId);
       let nextLink = `${networkUrl}/api/v1/transactions?limit=1000&order=desc&account.id=${encodeURIComponent(
         accountId
       )}`;
@@ -116,7 +116,10 @@ const TransferLookUp = () => {
       const transactionsAndLinks = await fetchTransactions(nextLink);
       const fetchedTransactions = transactionsAndLinks.transactions;
 
-      // TODO handle setting an account id from hook
+      // Automatically sets account id into the input if it exists
+      if(newAccountId !== undefined){
+        setValue("accountId", newAccountId);
+      }
       // If there are more links, set the next link value
       if (transactionsAndLinks.links.next !== null) {
         nextLink = transactionsAndLinks.links.next;
@@ -185,6 +188,15 @@ const TransferLookUp = () => {
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
     await searchTransactions(data.accountId);
   };
+
+  // If there is an account in session storage, use it to automatically search transactions
+  useEffect(() => {
+    const storedAccountId = sessionStorage.getItem("selectedAccountId");
+    if(storedAccountId) {
+      searchTransactions(storedAccountId);
+      setValue("accountId", storedAccountId);
+    }
+  }, [])
 
   return (
     <>
