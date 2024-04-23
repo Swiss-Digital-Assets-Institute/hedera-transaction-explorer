@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import useTransactionsSelection from "../../../hooks/useTransactionSelection";
 import { Button } from "../ui/button";
+import useNetworkSelection from "../../../hooks/useNetworkSelection";
 
 // TODO create a different interface type and import it EVERY where it needs to be added
 interface Transaction {
@@ -44,6 +45,7 @@ const SetTransactionsOnSelect: React.FC<SetTransactionsOnSelectProps> = ({
   rowTransactions,
 }) => {
   const { updateTransactions } = useTransactionsSelection();
+  const { selectedNetwork } = useNetworkSelection();
   const router = useRouter();
 
   const handleSeeTransactionsClick = () => {
@@ -52,7 +54,8 @@ const SetTransactionsOnSelect: React.FC<SetTransactionsOnSelectProps> = ({
     const transactionIds = rowTransactions
       .map((transaction) => transaction.transaction_id)
       .join("&id=");
-    router.push(`/transactions?id=${transactionIds}`);
+    const queryParams = `?selectedNetwork=${selectedNetwork}&id=${transactionIds}`
+    router.push(`/transactions${queryParams}`);
   };
 
   return (
