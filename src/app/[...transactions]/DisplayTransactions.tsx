@@ -52,7 +52,7 @@ const DisplayTransaction = () => {
         // TODO add logic in order to retrieve from URL
       }
     }
-  }, []);
+  }, [transactionData.length]);
 
   return (
     <>
