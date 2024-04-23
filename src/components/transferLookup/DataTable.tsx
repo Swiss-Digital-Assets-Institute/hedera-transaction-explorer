@@ -30,6 +30,7 @@ import {
   TableRow,
 } from "../ui/table";
 import { DataTablePagination } from "./DataTablePagination";
+import { DatePickerRange } from "../date-pickers/DatePickerRange";
 
 // Create an interface for the table
 interface DataTableProps<TData, TValue> {
@@ -108,7 +109,7 @@ export function DataTable<TData, TValue>({
           }
           className="max-w-sm text-slate-800"
         />
-        {/* TODO add date picker filter */}
+        {/* TODO allow input to be defined by date picker */}
         <Input
           placeholder="Filter transactions by Date..."
           value={
@@ -122,6 +123,7 @@ export function DataTable<TData, TValue>({
           }
           className="max-w-sm text-slate-800"
         />
+        <DatePickerRange/>
         {/* Allows to hide or show columns */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
