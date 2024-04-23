@@ -1,18 +1,18 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const useNetworkSelection = () => {
     /* 
         Checks if there is already an item in sessionStorage
         with the name selectedNetwork
     */
-   // TODO fix reference error for sessionStorage with useEffect / provide default answer
-    const [selectedNetwork, setSelectedNetwork] = useState<string>(() => {
-        if (sessionStorage.getItem('selectedNetwork')){
-            return sessionStorage.getItem('selectedNetwork') || '';
-        } else {
-            return 'mainnet';
+    const [selectedNetwork, setSelectedNetwork] = useState<string>('mainnet');
+
+    useEffect(() => {
+        const storedNetwork = sessionStorage.getItem('selectedNetwork');
+        if(storedNetwork){
+            setSelectedNetwork(storedNetwork)
         }
-    })
+    }, []);
 
     // Sets the stored network to the new network value
     const updateNetworkSelection = (network: string) => {
