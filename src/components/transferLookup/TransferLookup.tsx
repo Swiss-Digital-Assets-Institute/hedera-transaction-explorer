@@ -19,6 +19,8 @@ import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import { DataTable } from "./DataTable";
 import columns from "./TableColumnDef";
 import TransactionsGraph from "../transaction-graph/TransactionsGraph";
+import { tinybarToHbarConvert } from "@/utils/tinybarToHbar";
+import { timestampToDate } from "@/utils/dateStampConvert";
 
 // Interface for a single transfer inside a transaction
 interface Transfer {
@@ -183,18 +185,6 @@ const TransferLookUp = () => {
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
     await searchTransactions(data.accountId);
   };
-
-  // TODO create a helper
-  function tinybarToHbarConvert(tinybar: number | undefined) {
-    if (tinybar === undefined) return 0;
-    return tinybar / 100000000;
-  }
-
-  // TODO create a helper
-  function timestampToDate(timestamp: string): string {
-    const date = new Date(parseFloat(timestamp) * 1000);
-    return date.toLocaleString();
-  }
 
   return (
     <>

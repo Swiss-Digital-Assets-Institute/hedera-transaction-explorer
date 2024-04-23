@@ -8,6 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { tinybarToHbarConvert } from "@/utils/tinybarToHbar";
 import { useEffect, useState } from "react";
 
 // Transfer interface
@@ -52,12 +53,6 @@ const DisplayTransaction = () => {
       }
     }
   }, []);
-
-  // TODO create a helper
-  function tinybarToHbarConvert(tinybar: number | undefined) {
-    if (tinybar === undefined) return 0;
-    return tinybar / 100000000;
-  }
 
   return (
     <>
