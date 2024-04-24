@@ -57,7 +57,6 @@ const DisplayTransaction = () => {
       case "previewnet":
         return process.env.NEXT_PUBLIC_PREVIEWNET;
       default:
-        // TODO add error logging
         throw new Error(`Select a Network: ${network}`);
     }
   };
@@ -113,13 +112,7 @@ const DisplayTransaction = () => {
 
       setTransactionData(storedData);
     }
-  }, [
-    storedTransactionData,
-    transactionData.length,
-    urlAccount,
-    urlNetwork,
-    urlTransactions,
-  ]);
+  }, [storedTransactionData]);
 
   return (
     <>
