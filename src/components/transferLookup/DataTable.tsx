@@ -94,14 +94,21 @@ export function DataTable<TData, TValue>({
           onChange={handleTransactionTypeFilter}
         />
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
+      <DropdownMenuContent align="end" className="max-h-64 overflow-y-auto">
         {/* Render checkbox items for each transaction type */}
         {Object.entries(tableFilters.transactionTypes).map(([name, label]) => (
           <DropdownMenuCheckboxItem
             key={name}
             className="capitalize"
             checked={table.getColumn("name")?.getFilterValue() === name}
-            onCheckedChange={() => table.getColumn("name")?.setFilterValue(name)}
+            onCheckedChange={() => {
+              const currentFilter = table.getColumn("name")?.getFilterValue();
+              if(currentFilter === name){
+                table.getColumn("name")?.setFilterValue(undefined);
+              } else {
+                table.getColumn("name")?.setFilterValue(name)
+              }
+            }}
           >
             {label}
           </DropdownMenuCheckboxItem>
