@@ -1,5 +1,5 @@
 {
-    "transactionType": {
+    "transactionTypes": {
         "CONSENSUSCREATETOPIC": "Consensus Create Topic",
         "CONSENSUSDELETETOPIC": "Consensus Delete Topic",
         "CONSENSUSSUBMITMESSAGE": "Consensus Submit Message",
