@@ -31,7 +31,7 @@ import {
 } from "../ui/table";
 import { DataTablePagination } from "./DataTablePagination";
 import { DatePickerRange } from "../date-pickers/DatePickerRange";
-import tableFilters from "../../utils/tableFilters.json"
+import tableFilters from "../../utils/tableFilters.json";
 
 // Create an interface for the table
 interface DataTableProps<TData, TValue> {
@@ -77,8 +77,58 @@ export function DataTable<TData, TValue>({
   const totalTransactions = data.length;
   let columnNames: any[] = [];
 
+  const resultColumnValues: any[] = [];
+  data.forEach((row: any) => {
+    const resultValue = row.result;
+    if (resultValue && !resultColumnValues.includes(resultValue)) {
+      resultColumnValues.push(resultValue);
+    }
+  });
+
+  // Creates a drowdown menu for the Result column filter options
+  const resultFilterDropdown = (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Input
+          placeholder="Filter transactions by result"
+          className="max-w-sm text-slate-800"
+          value={
+            (table.getColumn("result")?.getFilterValue() as
+              | string
+              | undefined) || "Filter transactions by result"
+          }
+          onChange={(event) =>
+            table.getColumn("result")?.setFilterValue(event.target.value)
+          }
+        />
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="max-h-64 overflow-y-auto">
+        {/* Render checkbox for result type */}
+        {resultColumnValues.map((value) => (
+          <DropdownMenuCheckboxItem
+            key={value}
+            className="capitalize"
+            checked={table.getColumn("result")?.getFilterValue() === value}
+            onCheckedChange={() => {
+              const currentFilter = table.getColumn("result")?.getFilterValue();
+              if (currentFilter === value) {
+                table.getColumn("result")?.setFilterValue(undefined);
+              } else {
+                table.getColumn("result")?.setFilterValue(value);
+              }
+            }}
+          >
+            {value}
+          </DropdownMenuCheckboxItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+
   // Assigns the new filter to the transaction type
-  const handleTransactionTypeFilter = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleTransactionTypeFilter = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const selectedTransactionType = event.target.value;
     table.getColumn("name")?.setFilterValue(selectedTransactionType);
   };
@@ -87,10 +137,13 @@ export function DataTable<TData, TValue>({
   const transactionTypeDropdown = (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Input 
-          placeholder="Filter transactions by Type" 
+        <Input
+          placeholder="Filter transactions by Type"
           className="max-w-sm text-slate-800"
-          value={table.getColumn("name")?.getFilterValue() as string | undefined || "Filter by transaction type"}
+          value={
+            (table.getColumn("name")?.getFilterValue() as string | undefined) ||
+            "Filter by transaction type"
+          }
           onChange={handleTransactionTypeFilter}
         />
       </DropdownMenuTrigger>
@@ -103,10 +156,10 @@ export function DataTable<TData, TValue>({
             checked={table.getColumn("name")?.getFilterValue() === name}
             onCheckedChange={() => {
               const currentFilter = table.getColumn("name")?.getFilterValue();
-              if(currentFilter === name){
+              if (currentFilter === name) {
                 table.getColumn("name")?.setFilterValue(undefined);
               } else {
-                table.getColumn("name")?.setFilterValue(name)
+                table.getColumn("name")?.setFilterValue(name);
               }
             }}
           >
@@ -115,7 +168,7 @@ export function DataTable<TData, TValue>({
         ))}
       </DropdownMenuContent>
     </DropdownMenu>
-  )
+  );
 
   // TODO update column names to reflect header and not ID
 
@@ -127,7 +180,9 @@ export function DataTable<TData, TValue>({
         <Input
           placeholder="Filter transactions by ID..."
           value={
-            (table.getColumn("transaction_id")?.getFilterValue() as string) ?? ""}
+            (table.getColumn("transaction_id")?.getFilterValue() as string) ??
+            ""
+          }
           onChange={(event) =>
             table
               .getColumn("transaction_id")
@@ -138,21 +193,15 @@ export function DataTable<TData, TValue>({
         {/* Filter by Type */}
         {transactionTypeDropdown}
         {/* Filter transaction by Result */}
-        <Input
-          placeholder="Filter transactions by Result..."
-          value={(table.getColumn("result")?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table.getColumn("result")?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm text-slate-800"
-        />
+        {resultFilterDropdown}
         {/* TODO allow input to be defined by date picker */}
         <Input
           placeholder="Filter transactions by Date..."
           value={
             (table
               .getColumn("consensus_timestamp")
-              ?.getFilterValue() as string) ?? ""}
+              ?.getFilterValue() as string) ?? ""
+          }
           onChange={(event) =>
             table
               .getColumn("consensus_timestamp")
@@ -160,7 +209,7 @@ export function DataTable<TData, TValue>({
           }
           className="max-w-sm text-slate-800"
         />
-        <DatePickerRange/>
+        <DatePickerRange />
         {/* Allows to hide or show columns */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
