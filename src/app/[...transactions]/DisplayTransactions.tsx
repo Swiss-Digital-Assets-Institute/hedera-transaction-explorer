@@ -8,7 +8,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { timestampToDate } from "@/utils/dateStampConvert";
 import { tinybarToHbarConvert } from "@/utils/tinybarToHbar";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 // Transfer interface
@@ -36,23 +38,88 @@ interface Transaction {
     in an orderly fashion using a table display from tailwind.
     It iterates and orders it all using logic to format the data correctly
 */
+// TODO improve error logging and handling
 const DisplayTransaction = () => {
-  const [transactionData, setTransactionData] = useState([]);
+  const searchParams = useSearchParams();
+  const [transactionData, setTransactionData] = useState<Transaction[]>([]);
+  const urlNetwork = searchParams.get("selectedNetwork");
+  const urlAccount = searchParams.get("accountId");
+  const urlTransactions = searchParams.getAll("id");
+  const storedTransactionData = sessionStorage.getItem("transactions");
+
+  // Checks updates the network value for the selected network
+  const getApiUrlForNetwork = (network: string) => {
+    switch (network) {
+      case "mainnet":
+        return process.env.NEXT_PUBLIC_MAINNET;
+      case "testnet":
+        return process.env.NEXT_PUBLIC_TESTNET;
+      case "previewnet":
+        return process.env.NEXT_PUBLIC_PREVIEWNET;
+      default:
+        // TODO add error logging
+        throw new Error(`Select a Network: ${network}`);
+    }
+  };
 
   // Recover the transactions from session storage
   useEffect(() => {
-    const storedTransactionData = sessionStorage.getItem("transactions");
+    if (
+      (!storedTransactionData || storedTransactionData.length === 0) &&
+      urlAccount &&
+      urlNetwork &&
+      urlTransactions
+    ) {
+      sessionStorage.setItem("accountId", urlAccount);
+      sessionStorage.setItem("selectedNetwork", urlNetwork);
 
-    if (storedTransactionData) {
+      const networkUrl = getApiUrlForNetwork(urlNetwork);
+
+      // API call for retrieving a single transaction
+      const fetchTransactions = async (transactionId: string) => {
+        try {
+          const response = await fetch(
+            `${networkUrl}/api/v1/transactions/${transactionId}`
+          );
+          if (!response.ok) {
+            throw new Error(
+              `Failed to fetch transaction ${transactionId}. Response code: ${response.status}`
+            );
+          }
+          const transaction = await response.json();
+          return transaction;
+        } catch (error) {
+          console.error(`Error fetching transaction ${transactionId}: `, error);
+          return null;
+        }
+      };
+
+      // Gets all transactions and makes all api calls iterating through transactionIds
+      const fetchTransactionsFromUrl = async () => {
+        const fetchedTransactions = [];
+        for (const transactionId of urlTransactions) {
+          const transaction = await fetchTransactions(transactionId);
+          if (transaction) {
+            fetchedTransactions.push(transaction.transactions);
+          }
+        }
+        const flattenedTransactions = fetchedTransactions.flat();
+        setTransactionData(flattenedTransactions);
+      };
+
+      fetchTransactionsFromUrl();
+    } else if (storedTransactionData) {
       const storedData = JSON.parse(storedTransactionData);
 
       setTransactionData(storedData);
-
-      if (transactionData.length === 0) {
-        // TODO add logic in order to retrieve from URL
-      }
     }
-  }, [transactionData.length]);
+  }, [
+    storedTransactionData,
+    transactionData.length,
+    urlAccount,
+    urlNetwork,
+    urlTransactions,
+  ]);
 
   return (
     <>
@@ -96,7 +163,15 @@ const DisplayTransaction = () => {
               <div className="items-center">
                 <div className="grid grid-cols-3">
                   <div className="mr-20">Date:</div>
-                  <div>{transaction.consensus_timestamp}</div>
+                  <div>
+                    {!storedTransactionData ? (
+                      <div>
+                        {timestampToDate(transaction.consensus_timestamp)}
+                      </div>
+                    ) : (
+                      <div>{transaction.consensus_timestamp}</div>
+                    )}
+                  </div>
                 </div>
               </div>
               <div className="items-center">
@@ -212,28 +287,35 @@ const DisplayTransaction = () => {
               </div>
               {/* Shows the transaction fees */}
               <div className="flex flex-col">
-                    <div className="grid grid-cols-3">
-                        <div className="mt-4 col-span-3 mb-2">Fees:</div>
-                        <div className="mt-4">Sender:</div>
-                        <div className="col-span-2">
-                            {transaction.transaction_id.split("-")[0]}
-                        </div>
-                        <div className="ml-4">Transaction fees:</div>
-                        <div className="col-span-2">
-                            {transaction.charged_tx_fee} hbar
-                        </div>
-                        <div className="ml-4">Scheduled:</div>
-                        <div className="col-span-2">
-                            {transaction.scheduled.toString()}
-                        </div>
-                    </div>
+                <div className="grid grid-cols-3">
+                  <div className="mt-4 col-span-3 mb-2">Fees:</div>
+                  <div className="mt-4">Sender:</div>
+                  <div className="col-span-2">
+                    {transaction.transaction_id.split("-")[0]}
+                  </div>
+                  <div className="ml-4">Transaction fees:</div>
+                  <div className="col-span-2">
+                    {!storedTransactionData ? (
+                      <div>
+                        {tinybarToHbarConvert(transaction.charged_tx_fee)}
+                      </div>
+                    ) : (
+                      <div>{transaction.charged_tx_fee}</div>
+                    )}{" "}
+                    hbar
+                  </div>
+                  <div className="ml-4">Scheduled:</div>
+                  <div className="col-span-2">
+                    {transaction.scheduled.toString()}
+                  </div>
+                </div>
               </div>
             </div>
           </CardContent>
           <div>
             <CardFooter className="font-semibold text-md grid -grid-cols-4">
-                <div>Transaction Hash:</div>
-                <div>{transaction.transaction_hash}</div>
+              <div>Transaction Hash:</div>
+              <div>{transaction.transaction_hash}</div>
             </CardFooter>
           </div>
         </Card>
