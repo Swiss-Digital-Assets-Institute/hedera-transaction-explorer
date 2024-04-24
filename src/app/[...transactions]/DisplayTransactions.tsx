@@ -113,13 +113,7 @@ const DisplayTransaction = () => {
 
       setTransactionData(storedData);
     }
-  }, [
-    storedTransactionData,
-    transactionData.length,
-    urlAccount,
-    urlNetwork,
-    urlTransactions,
-  ]);
+  }, [storedTransactionData]);
 
   return (
     <>
