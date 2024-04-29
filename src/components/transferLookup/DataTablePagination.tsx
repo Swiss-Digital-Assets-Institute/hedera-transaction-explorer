@@ -35,8 +35,6 @@ export function DataTablePagination<TData>({
   const selectedRows = table.getFilteredSelectedRowModel().rows;
   const rowData = selectedRows.map((row) => row.original);
 
-  console.log(rowData)
-
   return (
     <div className="flex items-center justify-between px-2 text-sm">
       <div className="flex items-center text-muted-foreground">

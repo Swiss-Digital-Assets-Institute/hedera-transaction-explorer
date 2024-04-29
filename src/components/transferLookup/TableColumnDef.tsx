@@ -1,9 +1,15 @@
 "use client";
 
-import { ColumnDef } from "@tanstack/react-table";
+import { ColumnDef, FilterFn } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
 import { Button } from "../ui/button";
 import { Checkbox } from "../ui/checkbox";
+
+declare module "@tanstack/table-core" {
+  interface FilterFns {
+    dateBetweenFilterFn: FilterFn<unknown>;
+  }
+}
 
 // Declare transaction Type to be used in the Column definitions
 export type Transaction = {
@@ -77,6 +83,7 @@ export const columns: ColumnDef<Transaction>[] = [
         </Button>
       );
     },
+    filterFn: "dateBetweenFilterFn",
   },
   {
     // Node column

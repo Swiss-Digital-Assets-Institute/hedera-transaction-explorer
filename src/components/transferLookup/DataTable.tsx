@@ -31,6 +31,8 @@ import {
 } from "../ui/table";
 import { DataTablePagination } from "./DataTablePagination";
 import { DatePickerRange } from "../date-pickers/DatePickerRange";
+import tableFilters from "../../utils/tableFilters.json";
+import dateBetweenFilterFn from "@/utils/dateBetweenFilterFn";
 
 // Create an interface for the table
 interface DataTableProps<TData, TValue> {
@@ -57,6 +59,9 @@ export function DataTable<TData, TValue>({
   const table = useReactTable({
     data,
     columns,
+    filterFns: {
+      dateBetweenFilterFn: dateBetweenFilterFn,
+    },
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     onSortingChange: setSorting,
@@ -76,16 +81,121 @@ export function DataTable<TData, TValue>({
   const totalTransactions = data.length;
   let columnNames: any[] = [];
 
+  const resultColumnValues: any[] = [];
+  data.forEach((row: any) => {
+    const resultValue = row.result;
+    if (resultValue && !resultColumnValues.includes(resultValue)) {
+      resultColumnValues.push(resultValue);
+    }
+  });
+
+  const lastRowIndex = table.getRowCount() > 0 ? table.getRowCount() - 1 : 0;
+  const lastConsensusTimestamp: string = table
+    .getRow(lastRowIndex.toString())
+    .getValue("consensus_timestamp");
+
+  // Creates a drowdown menu for the Result column filter options
+  const resultFilterDropdown = (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Input
+          placeholder="Filter transactions by result"
+          className="max-w-sm text-slate-800"
+          value={
+            (table.getColumn("result")?.getFilterValue() as
+              | string
+              | undefined) || "Filter transactions by result"
+          }
+          onChange={(event) =>
+            table.getColumn("result")?.setFilterValue(event.target.value)
+          }
+        />
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="max-h-64 overflow-y-auto">
+        {/* Render checkbox for result type */}
+        {resultColumnValues.map((value) => (
+          <DropdownMenuCheckboxItem
+            key={value}
+            className="capitalize"
+            checked={table.getColumn("result")?.getFilterValue() === value}
+            onCheckedChange={() => {
+              const currentFilter = table.getColumn("result")?.getFilterValue();
+              if (currentFilter === value) {
+                table.getColumn("result")?.setFilterValue(undefined);
+              } else {
+                table.getColumn("result")?.setFilterValue(value);
+              }
+            }}
+          >
+            {value}
+          </DropdownMenuCheckboxItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+
+  // Assigns the new filter to the transaction type
+  const handleTransactionTypeFilter = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const selectedTransactionType = event.target.value;
+    table.getColumn("name")?.setFilterValue(selectedTransactionType);
+  };
+
+  // Creates a dropdown menu for the transactions type selection
+  const transactionTypeDropdown = (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Input
+          placeholder="Filter transactions by Type"
+          className="max-w-sm text-slate-800"
+          value={
+            (table.getColumn("name")?.getFilterValue() as string | undefined) ||
+            "Filter by transaction type"
+          }
+          onChange={handleTransactionTypeFilter}
+        />
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="max-h-64 overflow-y-auto">
+        {/* Render checkbox items for each transaction type */}
+        {Object.entries(tableFilters.transactionTypes).map(([name, label]) => (
+          <DropdownMenuCheckboxItem
+            key={name}
+            className="capitalize"
+            checked={table.getColumn("name")?.getFilterValue() === name}
+            onCheckedChange={() => {
+              const currentFilter = table.getColumn("name")?.getFilterValue();
+              if (currentFilter === name) {
+                table.getColumn("name")?.setFilterValue(undefined);
+              } else {
+                table.getColumn("name")?.setFilterValue(name);
+              }
+            }}
+          >
+            {label}
+          </DropdownMenuCheckboxItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+
+  // Sets the data table to use the selectedRange string
+  const handleDateRangeChange = (selectedRange: string) => {
+    table.getColumn("consensus_timestamp")?.setFilterValue(selectedRange);
+  };
   // TODO update column names to reflect header and not ID
 
   return (
     <div className="rounded-md text-sm">
       {/* Filters buttons */}
       <div className="flex items-center py-4 space-x-4">
+        {/* Filter by ID */}
         <Input
           placeholder="Filter transactions by ID..."
           value={
-            (table.getColumn("transaction_id")?.getFilterValue() as string) ?? ""}
+            (table.getColumn("transaction_id")?.getFilterValue() as string) ??
+            ""
+          }
           onChange={(event) =>
             table
               .getColumn("transaction_id")
@@ -93,37 +203,21 @@ export function DataTable<TData, TValue>({
           }
           className="max-w-sm text-slate-800"
         />
-        <Input
-          placeholder="Filter transactions by Type..."
-          value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table.getColumn("name")?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm text-slate-800"
-        />
-        <Input
-          placeholder="Filter transactions by Result..."
-          value={(table.getColumn("result")?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table.getColumn("result")?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm text-slate-800"
-        />
+        {/* Filter by Type */}
+        {transactionTypeDropdown}
+        {/* Filter transaction by Result */}
+        {resultFilterDropdown}
         {/* TODO allow input to be defined by date picker */}
-        <Input
-          placeholder="Filter transactions by Date..."
+        <DatePickerRange
+          className="max-w-sm text-slate-800"
           value={
             (table
               .getColumn("consensus_timestamp")
-              ?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table
-              .getColumn("consensus_timestamp")
-              ?.setFilterValue(event.target.value)
+              ?.getFilterValue() as string) ?? ""
           }
-          className="max-w-sm text-slate-800"
+          onChange={handleDateRangeChange}
+          firstValue={lastConsensusTimestamp}
         />
-        <DatePickerRange/>
         {/* Allows to hide or show columns */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
