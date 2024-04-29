@@ -17,42 +17,56 @@ import {
 } from "@/components/ui/popover"
 
 interface DatePickerRangeProps {
-  className?: string,
+  className?: string;
   value?: string;
   onChange: (selectedDate: string) => void;
+  firstValue?: string;
 }
 
 export function DatePickerRange({
   className,
   value,
   onChange,
+  firstValue,
 }: DatePickerRangeProps) {
-  const [date, setDate] = React.useState<DateRange | undefined>({
-    from: addDays(new Date(),-20),
-    to: new Date(),
-  })
-  // Reads the initial value of time stamp and sets it to 
-  React.useEffect(() => {
-    if (value !== "" && value) {
-      const dateParts = value.split(", ")[0].split("/");
+  const [date, setDate] = React.useState<DateRange | undefined>(() =>{
+    if (firstValue){
+      const dateParts = firstValue.split(", ")[0].split("/");
       const year = parseInt(dateParts[2]);
       const month = parseInt(dateParts[0]) - 1;
       const day = parseInt(dateParts[1]);
-  
-      setDate ({
+      return {
         from: new Date(year, month, day, 0, 0, 0),
-        to: new Date(year, month, day, 0, 0, 0),
-      });
-    };
-  }, [value]);
-
-  const handleDateChange = (selectedDate: DateRange | undefined) => {
-    if (selectedDate){
-      setDate(selectedDate);
-      if (onChange && selectedDate.from) {
-        const formattedDate = format(selectedDate.from, "MM/dd/yyyy")
-        onChange(formattedDate);
+        to: new Date(),
       }
+    } else {
+      return {
+        from: addDays(new Date(),-20),
+        to: new Date(),
+      }
+    }
+  })
+
+  // Checks to see which date is bigger in order to properly add them to the calendar
+  const handleDateChange = (selectedDate: DateRange | undefined) => {
+    if (selectedDate && selectedDate.from && selectedDate.to && date && date.from && date.to){
+      const formattedFrom = format(selectedDate?.from, "MM/dd/yyyy");
+      const formattedTo = format(selectedDate?.to, "MM/dd/yyyy");
+
+      if(selectedDate.from < date.from){
+        setDate({
+          from: selectedDate.from,
+          to: date.to
+        })
+        onChange(formattedFrom)
+      } else {
+        setDate({
+          from: date.from,
+          to: selectedDate.to,
+        })
+        onChange(formattedTo);
+      }
+      
     }
   }
 

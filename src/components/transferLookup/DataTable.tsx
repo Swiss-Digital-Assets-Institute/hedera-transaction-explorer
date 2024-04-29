@@ -85,6 +85,11 @@ export function DataTable<TData, TValue>({
     }
   });
 
+  const lastRowIndex = table.getRowCount() > 0 ? table.getRowCount() - 1 : 0;
+  const lastConsensusTimestamp: string = table
+    .getRow(lastRowIndex.toString())
+    .getValue("consensus_timestamp");
+
   // Creates a drowdown menu for the Result column filter options
   const resultFilterDropdown = (
     <DropdownMenu>
@@ -195,14 +200,17 @@ export function DataTable<TData, TValue>({
         {/* Filter transaction by Result */}
         {resultFilterDropdown}
         {/* TODO allow input to be defined by date picker */}
-        <DatePickerRange 
+        <DatePickerRange
           className="max-w-sm text-slate-800"
-          value={(
-            table
+          value={
+            (table
               .getColumn("consensus_timestamp")
               ?.getFilterValue() as string) ?? ""
-            }
-            onChange={(selectedDate) => table.getColumn("consensus_timestamp")?.setFilterValue(selectedDate)}
+          }
+          onChange={(selectedDate) =>
+            table.getColumn("consensus_timestamp")?.setFilterValue(selectedDate)
+          }
+          firstValue={lastConsensusTimestamp}
         />
         {/* Allows to hide or show columns */}
         <DropdownMenu>
