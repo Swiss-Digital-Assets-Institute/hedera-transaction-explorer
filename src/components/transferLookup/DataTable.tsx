@@ -195,21 +195,15 @@ export function DataTable<TData, TValue>({
         {/* Filter transaction by Result */}
         {resultFilterDropdown}
         {/* TODO allow input to be defined by date picker */}
-        <Input
-          placeholder="Filter transactions by Date..."
-          value={
-            (table
-              .getColumn("consensus_timestamp")
-              ?.getFilterValue() as string) ?? ""
-          }
-          onChange={(event) =>
+        <DatePickerRange 
+          className="max-w-sm text-slate-800"
+          value={(
             table
               .getColumn("consensus_timestamp")
-              ?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm text-slate-800"
+              ?.getFilterValue() as string) ?? ""
+            }
+            onChange={(selectedDate) => table.getColumn("consensus_timestamp")?.setFilterValue(selectedDate)}
         />
-        <DatePickerRange />
         {/* Allows to hide or show columns */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
