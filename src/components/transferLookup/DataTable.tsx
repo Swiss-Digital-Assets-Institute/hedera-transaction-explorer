@@ -32,6 +32,7 @@ import {
 import { DataTablePagination } from "./DataTablePagination";
 import { DatePickerRange } from "../date-pickers/DatePickerRange";
 import tableFilters from "../../utils/tableFilters.json";
+import dateBetweenFilterFn from "@/utils/dateBetweenFilterFn";
 
 // Create an interface for the table
 interface DataTableProps<TData, TValue> {
@@ -58,6 +59,9 @@ export function DataTable<TData, TValue>({
   const table = useReactTable({
     data,
     columns,
+    filterFns: {
+      dateBetweenFilterFn: dateBetweenFilterFn,
+    },
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     onSortingChange: setSorting,
@@ -175,6 +179,10 @@ export function DataTable<TData, TValue>({
     </DropdownMenu>
   );
 
+  // Sets the data table to use the selectedRange string
+  const handleDateRangeChange = (selectedRange: string) => {
+    table.getColumn("consensus_timestamp")?.setFilterValue(selectedRange);
+  };
   // TODO update column names to reflect header and not ID
 
   return (
@@ -207,9 +215,7 @@ export function DataTable<TData, TValue>({
               .getColumn("consensus_timestamp")
               ?.getFilterValue() as string) ?? ""
           }
-          onChange={(selectedDate) =>
-            table.getColumn("consensus_timestamp")?.setFilterValue(selectedDate)
-          }
+          onChange={handleDateRangeChange}
           firstValue={lastConsensusTimestamp}
         />
         {/* Allows to hide or show columns */}

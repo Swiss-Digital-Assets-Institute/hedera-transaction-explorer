@@ -19,7 +19,7 @@ import {
 interface DatePickerRangeProps {
   className?: string;
   value?: string;
-  onChange: (selectedDate: string) => void;
+  onChange: (selectedDateRange: string) => void;
   firstValue?: string;
 }
 
@@ -58,15 +58,14 @@ export function DatePickerRange({
           from: selectedDate.from,
           to: date.to
         })
-        onChange(formattedFrom)
+        onChange(`${formattedFrom} - ${format(date.to, "MM/dd/yyyy")}`)
       } else {
         setDate({
           from: date.from,
           to: selectedDate.to,
         })
-        onChange(formattedTo);
+        onChange(`${format(date.from, "MM/dd/yyyy")} - ${formattedTo}`);
       }
-      
     }
   }
 
