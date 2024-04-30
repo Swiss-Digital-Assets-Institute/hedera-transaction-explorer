@@ -1,14 +1,11 @@
 import { FilterFn } from "@tanstack/react-table";
+import { consensusTimestampToDate } from "./consensusTimestampToDate";
 
 // Filters with the special filter fn
 export const dateBetweenFilterFn: FilterFn<any> = (row, columnId, value) => {
   // Date format for all values, date, start, end
   const rawDate: string = row.getValue(columnId);
-  const dateParts = rawDate.split(", ")[0].split("/");
-  const year = parseInt(dateParts[2]);
-  const month = parseInt(dateParts[0]) - 1;
-  const day = parseInt(dateParts[1]);
-  const date = new Date(year, month, day, 0, 0, 0);
+  const date = consensusTimestampToDate(rawDate)
   const [start, end] = value.split(" - ");
 
   const startDateRaw = start.split("/");

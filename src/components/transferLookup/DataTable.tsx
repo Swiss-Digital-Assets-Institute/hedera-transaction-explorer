@@ -94,6 +94,8 @@ export function DataTable<TData, TValue>({
     .getRow(lastRowIndex.toString())
     .getValue("consensus_timestamp");
 
+  const firstConsensusTimestamp : string = table.getRow('0'.toString()).getValue("consensus_timestamp");
+
   // Creates a drowdown menu for the Result column filter options
   const resultFilterDropdown = (
     <DropdownMenu>
@@ -210,11 +212,7 @@ export function DataTable<TData, TValue>({
         {/* TODO allow input to be defined by date picker */}
         <DatePickerRange
           className="max-w-sm text-slate-800"
-          value={
-            (table
-              .getColumn("consensus_timestamp")
-              ?.getFilterValue() as string) ?? ""
-          }
+          value={firstConsensusTimestamp}
           onChange={handleDateRangeChange}
           firstValue={lastConsensusTimestamp}
         />

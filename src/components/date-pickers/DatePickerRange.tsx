@@ -15,6 +15,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
+import { consensusTimestampToDate } from "@/utils/consensusTimestampToDate"
 
 interface DatePickerRangeProps {
   className?: string;
@@ -30,14 +31,20 @@ export function DatePickerRange({
   firstValue,
 }: DatePickerRangeProps) {
   const [date, setDate] = React.useState<DateRange | undefined>(() =>{
-    if (firstValue){
-      const dateParts = firstValue.split(", ")[0].split("/");
-      const year = parseInt(dateParts[2]);
-      const month = parseInt(dateParts[0]) - 1;
-      const day = parseInt(dateParts[1]);
+    if(value && firstValue){
       return {
-        from: new Date(year, month, day, 0, 0, 0),
+        from: consensusTimestampToDate(firstValue),
+        to: consensusTimestampToDate(value),
+      }
+    } else if (firstValue){
+      return {
+        from: consensusTimestampToDate(firstValue),
         to: new Date(),
+      }
+    } else if(value){
+      return {
+        from: addDays(consensusTimestampToDate(value),-20),
+        to: consensusTimestampToDate(value),
       }
     } else {
       return {
