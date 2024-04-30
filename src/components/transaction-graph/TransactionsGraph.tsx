@@ -2,6 +2,9 @@
 
 import { BarChart } from "@mui/x-charts/BarChart";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { useEffect, useState } from "react";
+import { DatePickerRange } from "../date-pickers/DatePickerRange";
+import { consensusTimestampToDate } from "@/utils/consensusTimestampToDate";
 
 // Creates a transaction interface
 interface Transaction {
@@ -22,6 +25,32 @@ interface TransactionGraphProps {
     It then transforms said data as a Transaction interface and can iterate and group it.
 */
 const TransactionsGraph: React.FC<TransactionGraphProps> = ({ data }) => {
+  const [filteredChartData, setFilteredhartData] = useState<any[]>([]);
+
+  // Set the last and first time stamps to date values and string values
+  const lastConsensusTimestamp: string =
+    data.length > 0
+      ? data[data.length - 1].consensus_timestamp
+      : new Date().toISOString().split("T")[0];
+  const firstConsensusTimestamp: string =
+    data.length > 0
+      ? data[0].consensus_timestamp
+      : new Date().toISOString().split("T")[0];
+  const lastConsensusTimestampDate = consensusTimestampToDate(
+    lastConsensusTimestamp
+  );
+  const firstConsensusTimestampDate = consensusTimestampToDate(
+    firstConsensusTimestamp
+  );
+
+  // Sets the starting and end dates by default to the data provided
+  const [selectedStartDate, setSelectedStartDate] = useState<Date | null>(
+    lastConsensusTimestampDate
+  );
+  const [selectedEndDate, setSelectedEndDate] = useState<Date | null>(
+    firstConsensusTimestampDate
+  );
+
   const groupedTransactions: {
     [key: string]: { [key: string]: { success: number; failed: number } };
   } = {};
@@ -92,6 +121,43 @@ const TransactionsGraph: React.FC<TransactionGraphProps> = ({ data }) => {
     return acc;
   }, [] as { label: string; stack: string; dataKey: string }[]);
 
+  // Sets end and start date based on call
+  const handleDateRangeChange = (selectedDateRange: string) => {
+    const [start, end] = selectedDateRange.split(" - ");
+
+    const startDateRaw = start.split("/");
+    const startYear = parseInt(startDateRaw[2]);
+    const startMonth = parseInt(startDateRaw[0]) - 1;
+    const startDay = parseInt(startDateRaw[1]);
+    const startDate = new Date(startYear, startMonth, startDay, 0, 0, 0);
+
+    const endDateRaw = end.split("/");
+    const endYear = parseInt(endDateRaw[2]);
+    const endMonth = parseInt(endDateRaw[0]) - 1;
+    const endDay = parseInt(endDateRaw[1]);
+    const endDate = new Date(endYear, endMonth, endDay, 0, 0, 0);
+
+    setSelectedStartDate(startDate);
+    setSelectedEndDate(endDate);
+  };
+
+  // Updates the filters and then filters the table based upon the values
+  useEffect(() => {
+    const minDate = selectedStartDate
+      ? selectedStartDate.toISOString().split("T")[0]
+      : lastConsensusTimestamp;
+    const maxDate = selectedEndDate
+      ? selectedEndDate.toISOString().split("T")[0]
+      : firstConsensusTimestamp;
+
+    const filteredData = chartData.filter((dataItem) => {
+      const date = dataItem.name;
+      return date >= minDate && date <= maxDate;
+    });
+
+    setFilteredhartData(filteredData);
+  }, [selectedStartDate, selectedEndDate]);
+
   // TODO add dynamic size rendering to table
   return (
     <Card
@@ -111,12 +177,25 @@ const TransactionsGraph: React.FC<TransactionGraphProps> = ({ data }) => {
       <CardContent>
         <div className="flex items-center">
           <BarChart
-            dataset={chartData}
-            xAxis={[{ scaleType: "band", dataKey: "name" }]}
+            dataset={filteredChartData}
+            xAxis={[
+              {
+                scaleType: "band",
+                dataKey: "name",
+              },
+            ]}
             yAxis={[{ scaleType: "linear", dataKey: "left" }]}
             series={series}
             width={800}
             height={600}
+          />
+        </div>
+        <div>
+          <p className="font-bold text-lg mb-5">Filters</p>
+          <DatePickerRange
+            value={firstConsensusTimestamp}
+            onChange={handleDateRangeChange}
+            firstValue={lastConsensusTimestamp}
           />
         </div>
       </CardContent>
