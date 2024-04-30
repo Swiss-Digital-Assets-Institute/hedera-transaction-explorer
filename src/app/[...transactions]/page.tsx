@@ -14,7 +14,7 @@ const TransactionsPage = () => {
                     lg:text-4xl
                     text-center
                     pb-4
-                    text-slate-800
+                    text-greyCool-800
                 ">
                     <p>Selected Transactions on Account ID: </p>
                 </div>

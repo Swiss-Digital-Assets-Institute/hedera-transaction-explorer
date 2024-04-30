@@ -191,11 +191,11 @@ const TransactionsGraph: React.FC<TransactionGraphProps> = ({ data }) => {
   return (
     <Card
       className="
-            bg-slate-200
+            bg-greyBase-200
             mt-4
             rounded-xl
             shadow-[0_2px_2px]
-            shadow-cyan-600
+            shadow-brand-800
             items-center
             min-w-[300px]
         "
@@ -231,7 +231,7 @@ const TransactionsGraph: React.FC<TransactionGraphProps> = ({ data }) => {
               <DropdownMenuTrigger asChild>
                 <Input
                   placeholder="Filter transactions by type"
-                  className="max-w-sm text-slate-800"
+                  className="max-w-sm text-greyCool-800"
                   value={
                     transactionTypeFilter !== ""
                       ? transactionTypeFilter
@@ -242,7 +242,7 @@ const TransactionsGraph: React.FC<TransactionGraphProps> = ({ data }) => {
               </DropdownMenuTrigger>
               <DropdownMenuContent
                 align="end"
-                className="bg-slate-50 max-h-64 overflow-y-auto"
+                className="bg-greyCool-50 max-h-64 overflow-y-auto"
               >
                 {/* Render for each transaction type */}
                 {transactionFilters.map((type) => (

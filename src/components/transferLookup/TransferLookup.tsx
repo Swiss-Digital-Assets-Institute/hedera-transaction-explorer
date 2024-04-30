@@ -202,11 +202,10 @@ const TransferLookUp = () => {
     <>
       <Card
         className="
-            bg-slate-200
+            bg-greyBase-200
             rounded-xl
             shadow-[0_2px_2px]
-            shadow-cyan-500
-            text-slate-700
+            shadow-brand-800
             items-center
             min-w-[300px]
         "
@@ -215,7 +214,7 @@ const TransferLookUp = () => {
           <CardTitle className="text-2xl md:text-3xl lg:text-4xl">
             Hedera Transaction Explorer
           </CardTitle>
-          <CardDescription className="text-xs md:text-sm text-center text-slate-600">
+          <CardDescription className="text-xs md:text-sm text-center text-greyCool-600">
             Input the Hedera account that you want to search
           </CardDescription>
         </CardHeader>
