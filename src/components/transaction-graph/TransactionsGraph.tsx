@@ -1,10 +1,17 @@
 "use client";
 
+import { consensusTimestampToDate } from "@/utils/consensusTimestampToDate";
 import { BarChart } from "@mui/x-charts/BarChart";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuTrigger,
+} from "@radix-ui/react-dropdown-menu";
 import { useEffect, useState } from "react";
 import { DatePickerRange } from "../date-pickers/DatePickerRange";
-import { consensusTimestampToDate } from "@/utils/consensusTimestampToDate";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { DropdownMenuCheckboxItem } from "../ui/dropdown-menu";
+import { Input } from "../ui/input";
 
 // Creates a transaction interface
 interface Transaction {
@@ -25,7 +32,7 @@ interface TransactionGraphProps {
     It then transforms said data as a Transaction interface and can iterate and group it.
 */
 const TransactionsGraph: React.FC<TransactionGraphProps> = ({ data }) => {
-  const [filteredChartData, setFilteredhartData] = useState<any[]>([]);
+  const [filteredChartData, setFilteredChartData] = useState<any[]>([]);
 
   // Set the last and first time stamps to date values and string values
   const lastConsensusTimestamp: string =
@@ -50,6 +57,15 @@ const TransactionsGraph: React.FC<TransactionGraphProps> = ({ data }) => {
   const [selectedEndDate, setSelectedEndDate] = useState<Date | null>(
     firstConsensusTimestampDate
   );
+
+  // Declares empty array for all the filters
+  let transactionFilters: string[] = [];
+  const [transactionTypeFilter, setTransactionTypeFilter] =
+    useState<string>("");
+  // Sets the transaction type filters when called
+  const handleResultFilterChange = (value: string) => {
+    setTransactionTypeFilter(value);
+  };
 
   const groupedTransactions: {
     [key: string]: { [key: string]: { success: number; failed: number } };
@@ -104,6 +120,7 @@ const TransactionsGraph: React.FC<TransactionGraphProps> = ({ data }) => {
       const failedExists = acc.some((s) => s.label === failedLabel);
       // If not add them to the series
       if (!successExists) {
+        transactionFilters.push(successLabel);
         acc.push({
           label: successLabel,
           stack: name,
@@ -111,6 +128,7 @@ const TransactionsGraph: React.FC<TransactionGraphProps> = ({ data }) => {
         });
       }
       if (!failedExists) {
+        transactionFilters.push(failedLabel);
         acc.push({
           label: failedLabel,
           stack: name,
@@ -141,7 +159,7 @@ const TransactionsGraph: React.FC<TransactionGraphProps> = ({ data }) => {
     setSelectedEndDate(endDate);
   };
 
-  // Updates the filters and then filters the table based upon the values
+  // Updates the filters and then filters the table based upon the date and values
   useEffect(() => {
     const minDate = selectedStartDate
       ? selectedStartDate.toISOString().split("T")[0]
@@ -151,12 +169,23 @@ const TransactionsGraph: React.FC<TransactionGraphProps> = ({ data }) => {
       : firstConsensusTimestamp;
 
     const filteredData = chartData.filter((dataItem) => {
+      const [currentFilter, statusPre] = transactionTypeFilter
+        ? transactionTypeFilter.split(" ")
+        : [];
+      const status = statusPre ? statusPre.split("(")[1].split(")")[0] : "";
       const date = dataItem.name;
-      return date >= minDate && date <= maxDate;
+      const property = `${currentFilter}_${status}`;
+      return (
+        date >= minDate &&
+        date <= maxDate &&
+        (transactionTypeFilter === "" ||
+          (property in dataItem && (dataItem as any)[property] > 0))
+      );
     });
 
-    setFilteredhartData(filteredData);
-  }, [selectedStartDate, selectedEndDate]);
+    setFilteredChartData(filteredData);
+    console.log(filteredChartData);
+  }, [selectedStartDate, selectedEndDate, transactionTypeFilter]);
 
   // TODO add dynamic size rendering to table
   return (
@@ -192,11 +221,47 @@ const TransactionsGraph: React.FC<TransactionGraphProps> = ({ data }) => {
         </div>
         <div>
           <p className="font-bold text-lg mb-5">Filters</p>
-          <DatePickerRange
-            value={firstConsensusTimestamp}
-            onChange={handleDateRangeChange}
-            firstValue={lastConsensusTimestamp}
-          />
+          <div className="flex items-start">
+            <DatePickerRange
+              value={firstConsensusTimestamp}
+              onChange={handleDateRangeChange}
+              firstValue={lastConsensusTimestamp}
+            />
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Input
+                  placeholder="Filter transactions by type"
+                  className="max-w-sm text-slate-800"
+                  value={
+                    transactionTypeFilter !== ""
+                      ? transactionTypeFilter
+                      : "Filter transasctions by type"
+                  }
+                  readOnly
+                />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                align="end"
+                className="bg-slate-50 max-h-64 overflow-y-auto"
+              >
+                {/* Render for each transaction type */}
+                {transactionFilters.map((type) => (
+                  <DropdownMenuCheckboxItem
+                    key={type}
+                    className="capitalize"
+                    checked={transactionTypeFilter === type}
+                    onCheckedChange={() =>
+                      handleResultFilterChange(
+                        transactionTypeFilter === type ? "" : type
+                      )
+                    }
+                  >
+                    {type}
+                  </DropdownMenuCheckboxItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
       </CardContent>
     </Card>
