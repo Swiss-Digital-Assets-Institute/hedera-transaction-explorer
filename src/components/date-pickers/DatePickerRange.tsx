@@ -31,10 +31,20 @@ export function DatePickerRange({
   firstValue,
 }: DatePickerRangeProps) {
   const [date, setDate] = React.useState<DateRange | undefined>(() =>{
-    if (firstValue){
+    if(value && firstValue){
+      return {
+        from: consensusTimestampToDate(firstValue),
+        to: consensusTimestampToDate(value),
+      }
+    } else if (firstValue){
       return {
         from: consensusTimestampToDate(firstValue),
         to: new Date(),
+      }
+    } else if(value){
+      return {
+        from: addDays(consensusTimestampToDate(value),-20),
+        to: consensusTimestampToDate(value),
       }
     } else {
       return {
