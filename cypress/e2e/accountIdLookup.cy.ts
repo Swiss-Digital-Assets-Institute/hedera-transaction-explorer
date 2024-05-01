@@ -1,6 +1,6 @@
 describe("Go to Transaction URLs", () => {
   // Mainnet
-  it("Visits Transaction Mainnet URL and checks display", () => {
+  it("Visits main page and checks for mainnet account id", () => {
     cy.viewport(1980, 1080);
     // Intercepts all requests to main net
     cy.intercept(
@@ -31,7 +31,7 @@ describe("Go to Transaction URLs", () => {
   });
 
   // Testnet
-  it("Visits Transaction Mainnet URL and checks display", () => {
+  it("Visits main page and checks for testnet account id", () => {
     cy.viewport(1980, 1080);
     // Intercepts all requests to test net
     cy.intercept(
@@ -68,7 +68,7 @@ describe("Go to Transaction URLs", () => {
   });
 
   // Previewnet
-  it("Visits Transaction Mainnet URL and checks display", () => {
+  it("Visits main page and checks for previewnet account id", () => {
     cy.viewport(1980, 1080);
     // Intercepts all requests to preview net
     cy.intercept(
