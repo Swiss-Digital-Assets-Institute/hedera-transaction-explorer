@@ -3,9 +3,9 @@
 import { consensusTimestampToDate } from "@/utils/consensusTimestampToDate";
 import { BarChart } from "@mui/x-charts/BarChart";
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
 } from "@radix-ui/react-dropdown-menu";
 import { useEffect, useState } from "react";
 import { DatePickerRange } from "../date-pickers/DatePickerRange";
@@ -73,24 +73,31 @@ const TransactionsGraph: React.FC<TransactionGraphProps> = ({ data }) => {
 
   // Group transactions by day and name, add if failed or success to count
   data.forEach((transaction) => {
-    const timestamp = new Date(transaction.consensus_timestamp);
-    const day = timestamp.toISOString().split("T")[0];
+    const timestamp = new Date(consensusTimestampToDate(transaction.consensus_timestamp))
 
-    // Checks if there are any transactions for that day, if not empty object
-    if (!groupedTransactions[day]) {
-      groupedTransactions[day] = {};
-    }
+    if (!isNaN(timestamp.getTime())) {
+      const day = timestamp.toISOString().split("T")[0];
 
-    // Checks if there are any transaction type on said day, if not then it puts that day to 0
-    if (!groupedTransactions[day][transaction.name]) {
-      groupedTransactions[day][transaction.name] = { success: 0, failed: 0 };
-    }
+      // Checks if there are any transactions for that day, if not empty object
+      if (!groupedTransactions[day]) {
+        groupedTransactions[day] = {};
+      }
 
-    // Adds one to the count to either success or failed depending on result
-    if (transaction.result === "SUCCESS") {
-      groupedTransactions[day][transaction.name].success++;
+      // Checks if there are any transaction type on said day, if not then it puts that day to 0
+      if (!groupedTransactions[day][transaction.name]) {
+        groupedTransactions[day][transaction.name] = { success: 0, failed: 0 };
+      }
+
+      // Adds one to the count to either success or failed depending on result
+      if (transaction.result === "SUCCESS") {
+        groupedTransactions[day][transaction.name].success++;
+      } else {
+        groupedTransactions[day][transaction.name].failed++;
+      }
     } else {
-      groupedTransactions[day][transaction.name].failed++;
+      console.error(
+        `Invalid timestamp for transaction: ${transaction.consensus_timestamp}`
+      );
     }
   });
 

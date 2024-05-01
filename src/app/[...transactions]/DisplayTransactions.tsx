@@ -45,7 +45,10 @@ const DisplayTransaction = () => {
   const urlNetwork = searchParams.get("selectedNetwork");
   const urlAccount = searchParams.get("accountId");
   const urlTransactions = searchParams.getAll("id");
-  const storedTransactionData = sessionStorage.getItem("transactions");
+  const storedTransactionData =
+    typeof window !== "undefined"
+      ? sessionStorage.getItem("transactions")
+      : null;
 
   // Checks updates the network value for the selected network
   const getApiUrlForNetwork = (network: string) => {
@@ -116,6 +119,9 @@ const DisplayTransaction = () => {
 
   return (
     <>
+      <div className="flex items-center justify-center text-2xl lg:text-3xl xl:text-4xl font-bold">
+        <p>{urlAccount}</p>
+      </div>
       {/* Displays the card and the orderly transactions */}
       {transactionData.map((transaction: Transaction, index) => (
         <Card

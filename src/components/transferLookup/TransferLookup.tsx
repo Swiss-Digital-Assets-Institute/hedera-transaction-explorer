@@ -22,6 +22,7 @@ import TransactionsGraph from "../transaction-graph/TransactionsGraph";
 import { tinybarToHbarConvert } from "@/utils/tinybarToHbar";
 import { timestampToDate } from "@/utils/dateStampConvert";
 import useAccountId from "../../../hooks/useAccountId";
+import toast from "react-hot-toast";
 
 // Interface for a single transfer inside a transaction
 interface Transfer {
@@ -117,7 +118,7 @@ const TransferLookUp = () => {
       const fetchedTransactions = transactionsAndLinks.transactions;
 
       // Automatically sets account id into the input if it exists
-      if(newAccountId !== undefined){
+      if (newAccountId !== undefined) {
         setValue("accountId", newAccountId);
       }
       // If there are more links, set the next link value
@@ -186,17 +187,30 @@ const TransferLookUp = () => {
 
   // Submits and searches the account id transactions
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
-    await searchTransactions(data.accountId);
+    // If the account ID is valid show success message
+    if (data.accountId.match(/^0\.0\.(\d{1,8})$/)) {
+      toast.success("Searching for account data!");
+      await searchTransactions(data.accountId);
+    } else {
+      // Else show error and log them
+      console.log(errors);
+      toast.error(
+        "Account ID does not match an existing pattern, Account ID provided: " +
+          data.accountId
+      );
+      // TODO improve error logging
+      console.log(data.accountId, " error with accountId");
+    }
   };
 
   // If there is an account in session storage, use it to automatically search transactions
   useEffect(() => {
     const storedAccountId = sessionStorage.getItem("selectedAccountId");
-    if(storedAccountId) {
+    if (storedAccountId) {
       searchTransactions(storedAccountId);
       setValue("accountId", storedAccountId);
     }
-  }, [])
+  }, []);
 
   return (
     <>
@@ -235,7 +249,7 @@ const TransferLookUp = () => {
             <div>
               <Button onClick={handleSubmit(onSubmit)} className="bg-brand-700 hover:bg-brand-600">
                 {isLoading ? "Loading" : "Search"}
-            </Button>
+              </Button>
             </div>
           </Wrap>
         </CardContent>
@@ -247,7 +261,7 @@ const TransferLookUp = () => {
           </CardFooter>
         </div>
       </Card>
-      {transactions.length > 0 && <TransactionsGraph data={transactions}/>}
+      {transactions.length > 0 && <TransactionsGraph data={transactions} />}
     </>
   );
 };
