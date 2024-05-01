@@ -102,7 +102,7 @@ export function DataTable<TData, TValue>({
       <DropdownMenuTrigger asChild>
         <Input
           placeholder="Filter transactions by result"
-          className="max-w-sm text-greyCool-800"
+          className="max-w-sm text-greyCool-800 focus-visible:ring-pink-100 focus-visible:border-brand-400"
           value={
             (table.getColumn("result")?.getFilterValue() as
               | string
@@ -150,7 +150,7 @@ export function DataTable<TData, TValue>({
       <DropdownMenuTrigger asChild>
         <Input
           placeholder="Filter transactions by Type"
-          className="max-w-sm text-greyCool-800"
+          className="max-w-sm text-greyCool-800 focus-visible:ring-pink-100 focus-visible:border-brand-400"
           value={
             (table.getColumn("name")?.getFilterValue() as string | undefined) ||
             "Filter by transaction type"
@@ -203,13 +203,12 @@ export function DataTable<TData, TValue>({
               .getColumn("transaction_id")
               ?.setFilterValue(event.target.value)
           }
-          className="max-w-sm text-greyCool-800"
+          className="max-w-sm text-greyCool-800 focus-visible:ring-pink-100 focus-visible:border-brand-400"
         />
         {/* Filter by Type */}
         {transactionTypeDropdown}
         {/* Filter transaction by Result */}
         {resultFilterDropdown}
-        {/* TODO allow input to be defined by date picker */}
         <DatePickerRange
           className="max-w-sm text-greyCool-800"
           value={firstConsensusTimestamp}

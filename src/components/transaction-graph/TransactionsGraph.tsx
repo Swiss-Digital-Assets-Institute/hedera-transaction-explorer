@@ -231,7 +231,7 @@ const TransactionsGraph: React.FC<TransactionGraphProps> = ({ data }) => {
               <DropdownMenuTrigger asChild>
                 <Input
                   placeholder="Filter transactions by type"
-                  className="max-w-sm text-greyCool-800"
+                  className="max-w-sm text-greyCool-800 focus-visible:ring-pink-100 focus-visible:border-brand-400"
                   value={
                     transactionTypeFilter !== ""
                       ? transactionTypeFilter
