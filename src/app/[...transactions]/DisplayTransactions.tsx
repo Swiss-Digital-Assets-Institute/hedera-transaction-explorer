@@ -45,7 +45,7 @@ const DisplayTransaction = () => {
   const urlNetwork = searchParams.get("selectedNetwork");
   const urlAccount = searchParams.get("accountId");
   const urlTransactions = searchParams.getAll("id");
-  const storedTransactionData = sessionStorage.getItem("transactions");
+  const storedTransactionData = typeof window !== 'undefined' ? sessionStorage.getItem("transactions") : null;
 
   // Checks updates the network value for the selected network
   const getApiUrlForNetwork = (network: string) => {
