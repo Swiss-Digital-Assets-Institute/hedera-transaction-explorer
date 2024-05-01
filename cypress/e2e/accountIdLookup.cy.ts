@@ -1,4 +1,4 @@
-describe("Go to Transaction URLs", () => {
+describe("Looks up account IDs on the 3 nodes", () => {
   // Mainnet
   it("Visits main page and checks for mainnet account id", () => {
     cy.viewport(1980, 1080);
