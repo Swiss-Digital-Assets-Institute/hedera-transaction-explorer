@@ -216,11 +216,10 @@ const TransferLookUp = () => {
     <>
       <Card
         className="
-            bg-slate-200
+            bg-greyBase-200
             rounded-xl
             shadow-[0_2px_2px]
-            shadow-cyan-500
-            text-slate-700
+            shadow-brand-800
             items-center
             min-w-[300px]
         "
@@ -229,24 +228,26 @@ const TransferLookUp = () => {
           <CardTitle className="text-2xl md:text-3xl lg:text-4xl">
             Hedera Transaction Explorer
           </CardTitle>
-          <CardDescription className="text-xs md:text-sm text-center text-slate-600">
+          <CardDescription className="text-xs md:text-sm text-center text-greyCool-600">
             Input the Hedera account that you want to search
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Wrap>
             <div>
-              <Label htmlFor="accountId">Account ID:</Label>
+              <Label htmlFor="accountId" className="pb-4 text-md md:text-sm xl:text-lg">Account ID</Label>
               <Input
                 id="accountId"
                 type="string"
                 placeholder="0.0.XXXX"
                 disabled={isLoading}
                 {...register("accountId")}
+                className="focus-visible:ring-pink-100 focus-visible:border-brand-400"
               />
+              <p className="text-xs md:text-sm text-center text-greyCool-600">ID of type 0.0.XXXX</p>
             </div>
             <div>
-              <Button onClick={handleSubmit(onSubmit)}>
+              <Button onClick={handleSubmit(onSubmit)} className="bg-brand-700 hover:bg-brand-600">
                 {isLoading ? "Loading" : "Search"}
               </Button>
             </div>

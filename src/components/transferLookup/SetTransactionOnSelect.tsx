@@ -63,11 +63,10 @@ const SetTransactionsOnSelect: React.FC<SetTransactionsOnSelectProps> = ({
   return (
     <div>
       <Button
-        className="bg-cyan-600 hover:bg-cyan-500"
+        className="bg-brand-700 hover:bg-brand-600"
         disabled={rowsSelected === 0}
         onClick={handleSeeTransactionsClick}
       >
-        {/* TODO add dynamic URL generation */}
         See transactions
       </Button>
     </div>

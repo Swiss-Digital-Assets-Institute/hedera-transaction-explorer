@@ -127,11 +127,10 @@ const DisplayTransaction = () => {
         <Card
           key={index}
           className="
-                        bg-slate-200 
+                        bg-greyBase-200 
                         rounded-xl 
                         shadow-[0_2px_2px] 
-                        shadow-cyan-500 
-                        text-slate-700 
+                        shadow-brand-800
                         items-center 
                         min-w-[300px] 
                         mb-5"

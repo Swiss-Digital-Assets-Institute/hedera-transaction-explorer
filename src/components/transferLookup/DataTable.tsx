@@ -102,7 +102,7 @@ export function DataTable<TData, TValue>({
       <DropdownMenuTrigger asChild>
         <Input
           placeholder="Filter transactions by result"
-          className="max-w-sm text-slate-800"
+          className="max-w-sm text-greyCool-800 focus-visible:ring-pink-100 focus-visible:border-brand-400"
           value={
             (table.getColumn("result")?.getFilterValue() as
               | string
@@ -150,7 +150,7 @@ export function DataTable<TData, TValue>({
       <DropdownMenuTrigger asChild>
         <Input
           placeholder="Filter transactions by Type"
-          className="max-w-sm text-slate-800"
+          className="max-w-sm text-greyCool-800 focus-visible:ring-pink-100 focus-visible:border-brand-400"
           value={
             (table.getColumn("name")?.getFilterValue() as string | undefined) ||
             "Filter by transaction type"
@@ -203,15 +203,14 @@ export function DataTable<TData, TValue>({
               .getColumn("transaction_id")
               ?.setFilterValue(event.target.value)
           }
-          className="max-w-sm text-slate-800"
+          className="max-w-sm text-greyCool-800 focus-visible:ring-pink-100 focus-visible:border-brand-400"
         />
         {/* Filter by Type */}
         {transactionTypeDropdown}
         {/* Filter transaction by Result */}
         {resultFilterDropdown}
-        {/* TODO allow input to be defined by date picker */}
         <DatePickerRange
-          className="max-w-sm text-slate-800"
+          className="max-w-sm text-greyCool-800"
           value={firstConsensusTimestamp}
           onChange={handleDateRangeChange}
           firstValue={lastConsensusTimestamp}
@@ -248,13 +247,13 @@ export function DataTable<TData, TValue>({
       {/* Table */}
       <Table className="border max-w-[1980px] text-wrap">
         {/* Headers */}
-        <TableHeader className="bg-slate-200">
+        <TableHeader className="bg-greyCool-200">
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => {
                 columnNames.push();
                 return (
-                  <TableHead key={header.id} className="text-slate-700">
+                  <TableHead key={header.id} className="text-greyCool-700">
                     {header.isPlaceholder
                       ? null
                       : flexRender(
@@ -268,7 +267,7 @@ export function DataTable<TData, TValue>({
           ))}
         </TableHeader>
         {/* Table body, shows no results in case a search gives empty*/}
-        <TableBody className="text-slate-700 text-wrap">
+        <TableBody className="text-greyCool-700 text-wrap">
           {table.getRowModel().rows?.length ? (
             table.getRowModel().rows.map((row) => (
               <TableRow
@@ -298,7 +297,7 @@ export function DataTable<TData, TValue>({
         </TableBody>
       </Table>
       {/* Total transactions */}
-      <p className="font-bold text-right text-xl text-slate-700 pt-2">
+      <p className="font-bold text-right text-xl text-greyCool-700 pt-2">
         Total transactions: {totalTransactions}
       </p>
     </div>

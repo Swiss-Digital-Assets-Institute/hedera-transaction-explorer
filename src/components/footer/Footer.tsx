@@ -3,7 +3,7 @@ import Container from "../Container";
 
 const Footer = () => {
   return (
-    <footer className="bg-slate-100 text-sm my--16">
+    <footer className="bg-greyCool-100 text-sm my--16">
       <Container>
         <div
           className="

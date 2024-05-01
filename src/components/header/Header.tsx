@@ -43,7 +43,7 @@ const Header = () => {
         w-full
         z-30
         shadow-sm
-        bg-slate-100
+        bg-greyCool-100
         py-4
         px-2
     "
