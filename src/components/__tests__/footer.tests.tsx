@@ -1,7 +1,6 @@
 import "@testing-library/jest-dom";
 import { render } from "@testing-library/react";
 import Footer from "../footer/Footer";
-import React from "react";
 
 describe("Footer component", () => {
   it("renders footer text correctly", () => {
