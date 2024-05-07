@@ -23,6 +23,7 @@ import { tinybarToHbarConvert } from "@/utils/tinybarToHbar";
 import { timestampToDate } from "@/utils/dateStampConvert";
 import useAccountId from "../../../hooks/useAccountId";
 import toast from "react-hot-toast";
+import { logErrorToFile } from "@/utils/errorLogging";
 
 // Interface for a single transfer inside a transaction
 interface Transfer {
@@ -70,7 +71,9 @@ const TransferLookUp = () => {
       case "previewnet":
         return process.env.NEXT_PUBLIC_PREVIEWNET;
       default:
-        // TODO add error logging
+        console.log(network, " error with network");
+        const networkError = `${network} error with network`;
+        logErrorToFile(networkError, __filename);
         throw new Error(`Select a Network: ${network}`);
     }
   };
@@ -86,7 +89,9 @@ const TransferLookUp = () => {
       const response = await fetch(url);
 
       if (!response.ok) {
-        // TODO improve error logging
+        console.log(response.status, " failed to fetch transactions");
+        const failedFetchedTransactionsError = `Status: ${response.status} failed to fetch transactions`;
+        logErrorToFile(failedFetchedTransactionsError, __filename);
         throw new Error(
           `Failed to fetch transactions. Status: ${response.status}`
         );
@@ -96,9 +101,10 @@ const TransferLookUp = () => {
       console.log(data);
       return data || [];
     } catch (error) {
-      // TODO improve error logging
+      const fecthTransactionsError = `Error fetching transactions: ${error}`;
+      logErrorToFile(fecthTransactionsError, __filename)
       console.error("Error fetching transactions: ", error);
-      throw error;
+      throw new Error(`Error fetching transactions: ${error}`);
     }
   }
   /*
@@ -177,9 +183,10 @@ const TransferLookUp = () => {
       console.log("Transactions: ", modifiedTransactions);
       console.log("Link: ", links);
     } catch (error) {
-      // TODO improve error logging
+      const searchTransactionsError = `Error searching transactions: ${error}`;
+      logErrorToFile(searchTransactionsError, __filename)
       console.log("Error searching transactions ", error);
-      throw error;
+      throw new Error(`Error searching transactions ${error}`);
     } finally {
       setIsLoading(false);
     }
@@ -198,8 +205,9 @@ const TransferLookUp = () => {
         "Account ID does not match an existing pattern, Account ID provided: " +
           data.accountId
       );
-      // TODO improve error logging
       console.log(data.accountId, " error with accountId");
+      const accountIdError = `Error with account id ${data.accountId} `;
+      logErrorToFile(accountIdError, __filename);
     }
   };
 
@@ -235,7 +243,12 @@ const TransferLookUp = () => {
         <CardContent>
           <Wrap>
             <div>
-              <Label htmlFor="accountId" className="pb-4 text-md md:text-sm xl:text-lg">Account ID</Label>
+              <Label
+                htmlFor="accountId"
+                className="pb-4 text-md md:text-sm xl:text-lg"
+              >
+                Account ID
+              </Label>
               <Input
                 id="accountId"
                 type="string"
@@ -244,10 +257,15 @@ const TransferLookUp = () => {
                 {...register("accountId")}
                 className="focus-visible:ring-pink-100 focus-visible:border-brand-400"
               />
-              <p className="text-xs md:text-sm text-center text-greyCool-600">ID of type 0.0.XXXX</p>
+              <p className="text-xs md:text-sm text-center text-greyCool-600">
+                ID of type 0.0.XXXX
+              </p>
             </div>
             <div>
-              <Button onClick={handleSubmit(onSubmit)} className="bg-brand-700 hover:bg-brand-600">
+              <Button
+                onClick={handleSubmit(onSubmit)}
+                className="bg-brand-700 hover:bg-brand-600"
+              >
                 {isLoading ? "Loading" : "Search"}
               </Button>
             </div>
