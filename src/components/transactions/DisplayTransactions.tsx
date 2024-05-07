@@ -9,6 +9,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { timestampToDate } from "@/utils/dateStampConvert";
+import { logErrorToFile } from "@/utils/errorLogging";
 import { tinybarToHbarConvert } from "@/utils/tinybarToHbar";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -38,7 +39,6 @@ interface Transaction {
     in an orderly fashion using a table display from tailwind.
     It iterates and orders it all using logic to format the data correctly
 */
-// TODO improve error logging and handling
 const DisplayTransaction = () => {
   const searchParams = useSearchParams();
   const [transactionData, setTransactionData] = useState<Transaction[]>([]);
@@ -60,7 +60,10 @@ const DisplayTransaction = () => {
       case "previewnet":
         return process.env.NEXT_PUBLIC_PREVIEWNET;
       default:
-        throw new Error(`Select a Network: ${network}`);
+        console.log(network, " error with network");
+        const networkError = `${network} error with network`;
+        logErrorToFile(networkError, __filename);
+        throw new Error(`Error with Network: ${network}`);
     }
   };
 
@@ -84,6 +87,9 @@ const DisplayTransaction = () => {
             `${networkUrl}/api/v1/transactions/${transactionId}`
           );
           if (!response.ok) {
+            console.log(response.status, " failed to fetch transactions");
+            const failedFetchedTransactionsError = `Status: ${response.status} failed to fetch transactions`;
+            logErrorToFile(failedFetchedTransactionsError, __filename);
             throw new Error(
               `Failed to fetch transaction ${transactionId}. Response code: ${response.status}`
             );
@@ -91,8 +97,10 @@ const DisplayTransaction = () => {
           const transaction = await response.json();
           return transaction;
         } catch (error) {
+          const fecthTransactionsError = `Error fetching transaction ${transactionId}: ${error}`;
+          logErrorToFile(fecthTransactionsError, __filename)
           console.error(`Error fetching transaction ${transactionId}: `, error);
-          return null;
+          throw new Error(`Error fetching transactions ${transactionId}: ${error}`);
         }
       };
 
