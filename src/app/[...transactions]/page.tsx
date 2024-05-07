@@ -1,5 +1,5 @@
 import Container from "@/components/Container";
-import DisplayTransaction from "./DisplayTransactions";
+import DisplayTransaction from "../../components/transactions/DisplayTransactions";
 
 const TransactionsPage = () => {
     return ( 
