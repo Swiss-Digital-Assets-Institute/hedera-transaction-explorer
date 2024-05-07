@@ -1,10 +1,8 @@
 import "@testing-library/jest-dom";
-import React from "react";
-import { fireEvent, render, screen, within } from "@testing-library/react";
-import { DataTable } from "../transferLookup/DataTable";
+import { render, screen } from "@testing-library/react";
 import mockTransactionsTable from "../../../mockData/mockTransactionsTable.json";
+import { DataTable } from "../transferLookup/DataTable";
 import columns, { Transaction } from "../transferLookup/TableColumnDef";
-import { fail } from "assert";
 
 // mock use router
 jest.mock("next/navigation", () => ({
