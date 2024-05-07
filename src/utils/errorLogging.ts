@@ -14,16 +14,15 @@ export function logErrorToFile(error: Error | string, file: string): void {
     errorMessage = `[${currentDate}] Error in file: ${file}\n${
       (error as Error).stack
     }\n\n`;
-  }
-  // creates the log file path
-  const logFilePath = path.resolve(__dirname, "../../log.txt");
+  }  
+    // checks if error log exists already if not creates it in local storage
+    let errorLog: string[] = JSON.parse(localStorage.getItem("errorLog") || "[]");
 
-  // Append the error message to the log file
-  fs.appendFile(logFilePath, errorMessage, (err) => {
-    if (err) {
-      console.error("Error writing to file:", err);
-    } else {
-      console.log("Succesfully logged error:", logFilePath);
-    }
-  });
+    // adds error message
+    errorLog.push(errorMessage);
+  
+    // puts the log back into session storage
+    localStorage.setItem("errorLog", JSON.stringify(errorLog));
+  
+    console.log("Successfully logged error to local storage");
 }
