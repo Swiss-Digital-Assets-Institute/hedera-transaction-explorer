@@ -12,6 +12,7 @@ import { DatePickerRange } from "../date-pickers/DatePickerRange";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { DropdownMenuCheckboxItem } from "../ui/dropdown-menu";
 import { Input } from "../ui/input";
+import { logErrorToFile } from "@/utils/errorLogging";
 
 // Creates a transaction interface
 interface Transaction {
@@ -95,6 +96,8 @@ const TransactionsGraph: React.FC<TransactionGraphProps> = ({ data }) => {
         groupedTransactions[day][transaction.name].failed++;
       }
     } else {
+      const timesamptTransactionsError = `Error invalid timestamp for transaction: ${transaction.consensus_timestamp}`;
+      logErrorToFile(timesamptTransactionsError, __filename)
       console.error(
         `Invalid timestamp for transaction: ${transaction.consensus_timestamp}`
       );
