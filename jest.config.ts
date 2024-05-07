@@ -4,12 +4,12 @@
  */
 
 import type { Config } from "jest";
-import nextJest from 'next/jest.js';
+import nextJest from "next/jest.js";
 
 const createJestConfig = nextJest({
   // Provide the path to your Next.js app to load next.config.js and .env files in your test environment
-  dir: './',
-})
+  dir: "./",
+});
 
 const config: Config = {
   // All imported modules in your tests should be mocked automatically
@@ -108,7 +108,7 @@ const config: Config = {
   // notifyMode: "failure-change",
 
   // A preset that is used as a base for Jest's configuration
-  preset: 'ts-jest',
+  preset: "ts-jest",
 
   // Run tests from one or more projects
   // projects: undefined,
@@ -170,6 +170,15 @@ const config: Config = {
   // testPathIgnorePatterns: [
   //   "\\\\node_modules\\\\"
   // ],
+  // extensionsToTreatAsEsm: [".ts"],
+  // globals: {
+  //   "ts-jest": {
+  //     useESM: true,
+  //   },
+  // },
+  // transformIgnorePatterns: [
+  //   "node_modules/(?!@ngrx|(?!deck.gl)|ng-dynamic)"
+  // ],
 
   // The regexp pattern or array of patterns that Jest uses to detect test files
   // testRegex: [],
@@ -186,10 +195,13 @@ const config: Config = {
   },
 
   // An array of regexp pattern strings that are matched against all source file paths, matched files will skip transformation
-  // transformIgnorePatterns: [
-  //   "\\\\node_modules\\\\",
-  //   "\\.pnp\\.[^\\\\]+$"
-  // ],
+  transformIgnorePatterns: [
+    // "\\\\node_modules\\\\",
+    // "\\.pnp\\.[^\\\\]+$",
+    "/node_modules/(?!@mui).+\\.js$",
+    '/node_modules/(?!@mui/x-charts|@mui/material|@babel/runtime|d3-(color|format|interpolate|scale|shape|time|time-format|path|array)|internmap|helpers)'
+    //'/node_modules/(?!@mui/x-charts|@mui/material)'
+  ],
 
   // An array of regexp pattern strings that are matched against all modules before the module loader will automatically return a mock for them
   // unmockedModulePathPatterns: undefined,
@@ -204,4 +216,4 @@ const config: Config = {
   // watchman: true,
 };
 
-export default createJestConfig(config)
+export default createJestConfig(config);
