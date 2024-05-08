@@ -1,36 +1,29 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# The Hashgraph Association Transaction Explorer Web Application
 
-## Getting Started
+This application is a front end, open-source application. Its main focus is:
 
-First, run the development server:
+- To look up transactions made in any of its nodes
+- To visualize the data from any account in a table and graph format
+- Share any transactions via an URL
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Installation guide for local use
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+1. Run `npm install` to install all dependencies of the project
+2. Run `npm run dev` to run the application in a developement enviroment
+3. Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Testing
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+This application has 2 types of tests:
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+1. Jest Testing
+   1. To run Jest input the command `npm run test` OR `npx jest`
+   2. Wait for the tests to run
+      1. Currently only 71% coverage is assured in Jest Testing
+      2. The Graph is not currently tested, waiting on an Open GitHub [issue](https://github.com/mui/mui-x/issues/11568) from Mui X-Charts
+2. Cypress E2E testing
+   1. To run the test you must run the application before with `npm run dev`
+   2. After the application is running:
+      1. Run the command `npx cypress open`
+      2. Go into E2E testing
+         1. Select and run the tests you wish to
